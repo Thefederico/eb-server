@@ -1,5 +1,16 @@
-import { HttpException, HttpStatus, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { CreateProductDto, FilterProductsDto, UpdateProductDto } from './dto/products.dto';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CreateProductDto,
+  FilterProductsDto,
+  UpdateProductDto,
+} from './dto/products.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './entities/product.entity';
 import { FilterQuery, Model } from 'mongoose';
@@ -10,23 +21,26 @@ export class ProductsService {
 
   constructor(
     @InjectModel(Product.name) private readonly productModel: Model<Product>,
-  ) { }
+  ) {}
 
   create(createProductDto: CreateProductDto) {
     try {
       const newProduct = new this.productModel(createProductDto);
       return newProduct.save();
     } catch (error) {
-      if (error.name === 'CastError') throw new NotFoundException('Product not found');
+      if (error.name === 'CastError')
+        throw new NotFoundException('Product not found');
       this.logger.error(error);
-      throw new InternalServerErrorException('Error creating product', { cause: new Error() });
+      throw new InternalServerErrorException('Error creating product', {
+        cause: new Error(),
+      });
     }
   }
 
   async findAll(params?: FilterProductsDto) {
     try {
       if (params) {
-        const filters: FilterQuery<Product> = {}
+        const filters: FilterQuery<Product> = {};
         const { limit, offset } = params;
         const { maxPrice, minPrice } = params;
 
@@ -34,13 +48,19 @@ export class ProductsService {
           filters.price = { $gte: minPrice, $lte: maxPrice };
         }
 
-        return await this.productModel.find(filters).skip(offset).limit(limit).exec();
+        return await this.productModel
+          .find(filters)
+          .skip(offset)
+          .limit(limit)
+          .exec();
       }
 
       return await this.productModel.find().exec();
     } catch (error) {
       this.logger.error(error);
-      throw new InternalServerErrorException('Error getting products', { cause: new Error() });
+      throw new InternalServerErrorException('Error getting products', {
+        cause: new Error(),
+      });
     }
   }
 
@@ -51,23 +71,22 @@ export class ProductsService {
       if (!product) throw new Error('Not found');
 
       return product;
-    }
-    catch (error) {
+    } catch (error) {
       this.logger.error(error);
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND)
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
     try {
-      const product = await this.productModel.findByIdAndUpdate(id, { $set: updateProductDto }, { new: true })
+      const product = await this.productModel
+        .findByIdAndUpdate(id, { $set: updateProductDto }, { new: true })
         .exec();
 
       if (!product) throw new Error('Not found');
     } catch (error) {
       this.logger.error(error);
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND)
-
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -80,8 +99,7 @@ export class ProductsService {
       await this.productModel.deleteOne({ _id: id });
     } catch (error) {
       this.logger.error(error);
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND)
-
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 }

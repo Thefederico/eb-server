@@ -9,13 +9,7 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule, {
-    logger: [
-      'log',
-      'error',
-      'warn',
-      'debug',
-      'verbose'
-    ]
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
   app.use(morgan('tiny'));
@@ -23,19 +17,23 @@ async function bootstrap() {
   //disabled x-powered-by
   app.getHttpAdapter().getInstance().disable('x-powered-by');
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transformOptions: {
-      enableImplicitConversion: true,
-    }
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
 
   const configService = app.get(ConfigService);
 
   const port = configService.get('PORT');
 
-  await app.listen(port).then(async () => logger.log(`Server is running in ${await app.getUrl()}`));
+  await app
+    .listen(port)
+    .then(async () => logger.log(`Server is running in ${await app.getUrl()}`));
 }
 
 bootstrap();

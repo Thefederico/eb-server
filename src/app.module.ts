@@ -8,7 +8,6 @@ import { DatabaseModule } from './database/database.module';
 import { ProductsModule } from './products/products.module';
 import configuration from './config/configuration';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,4 +25,4 @@ import configuration from './config/configuration';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

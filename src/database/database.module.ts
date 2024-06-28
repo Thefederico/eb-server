@@ -13,8 +13,8 @@ import configuration from 'src/config/configuration';
         };
       },
       inject: [configuration.KEY],
-    })
+    }),
   ],
-  exports: [MongooseModule]
+  exports: [MongooseModule],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}
