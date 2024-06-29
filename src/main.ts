@@ -14,6 +14,8 @@ async function bootstrap() {
 
   app.use(morgan('tiny'));
 
+  app.enableCors();
+
   //disabled x-powered-by
   app.getHttpAdapter().getInstance().disable('x-powered-by');
 
