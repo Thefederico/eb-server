@@ -43,9 +43,19 @@ export class ProductsService {
         const filters: FilterQuery<Product> = {};
         const { limit, offset } = params;
         const { maxPrice, minPrice } = params;
+        const { category } = params;
+        const { name } = params;
 
         if (maxPrice && minPrice) {
           filters.price = { $gte: minPrice, $lte: maxPrice };
+        }
+
+        if (category) {
+          filters.category = { $regex: category, $options: 'i' };
+        }
+
+        if (name) {
+          filters.name = { $regex: name, $options: 'i' };
         }
 
         return await this.productModel
