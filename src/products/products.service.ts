@@ -112,4 +112,43 @@ export class ProductsService {
       throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
+
+  async csvProducts(res) {
+    try {
+      const products = await this.findAll();
+
+      const filename = `products-${new Date().toISOString()}.csv`;
+
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+
+      res.on('error', () => {
+        this.logger.error('sendReportFile (writing) - Error sending file');
+      });
+
+      const header = 'id;nombre;stock;categoria;descripción;imageUrl\r\n';
+
+      res.write(header);
+
+      products.forEach((product) => {
+        const row =
+          [
+            product._id,
+            product.name,
+            product.stock,
+            product.category,
+            product.description,
+            product.imageUrl,
+          ].join(';') + '\r\n';
+        res.write(row, 'utf8');
+      });
+
+      res.end();
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException('Error getting products', {
+        cause: new Error(),
+      });
+    }
+  }
 }

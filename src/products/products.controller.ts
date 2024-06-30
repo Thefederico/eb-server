@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  Res,
+  Req,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import {
@@ -33,13 +35,19 @@ export class ProductsController {
     return this.productsService.findAll(params);
   }
 
-  @Get(':productId')
+  @Get('/csv')
+  @ApiOperation({ summary: 'Get all products in csv format' })
+  getAllInCsv(@Req() _req, @Res() res) {
+    return this.productsService.csvProducts(res);
+  }
+
+  @Get('/:productId')
   @ApiOperation({ summary: 'Get a product by id' })
   findOne(@Param('productId', MongoIdPipe) productId: string) {
     return this.productsService.findOne(productId);
   }
 
-  @Patch(':productId')
+  @Patch('/:productId')
   @ApiOperation({ summary: 'Update a product' })
   update(
     @Param('productId', MongoIdPipe) productId: string,
@@ -48,7 +56,7 @@ export class ProductsController {
     return this.productsService.update(productId, updateProductDto);
   }
 
-  @Delete(':productId')
+  @Delete('/:productId')
   @ApiOperation({ summary: 'Remove a product' })
   remove(@Param('productId', MongoIdPipe) productId: string) {
     return this.productsService.remove(productId);
